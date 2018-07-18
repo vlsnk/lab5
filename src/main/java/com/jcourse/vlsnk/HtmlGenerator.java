@@ -1,6 +1,7 @@
 package com.jcourse.vlsnk;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,7 +21,7 @@ public class HtmlGenerator {
     private static final String end = "    </table>\n</body>\n</html>\n";
     private final static String htmlType = "text/html";
     File main;
-    List<File> filesInDir;
+    List<File> filesInDir = new ArrayList<>();
     DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
 
 
@@ -35,6 +36,7 @@ public class HtmlGenerator {
         List<File> dirList = new ArrayList<>();
 
         File[] files = main.listFiles();
+        if(files == null) return;
         for (File s : files) {
             if (s.isDirectory()) dirList.add(s);
             if (s.isFile()) fileList.add(s);
@@ -101,8 +103,9 @@ public class HtmlGenerator {
     }
 
     String getLink(File f) throws IOException {
-        if (f.isDirectory()) return f.getName()+"\\";
-        return f.getName();
+        String name = URLEncoder.encode(f.getName(), "ASCII");
+        if (f.isDirectory()) return name + "\\";
+        return name;
     }
 
     public byte[] getAnswer() throws IOException {

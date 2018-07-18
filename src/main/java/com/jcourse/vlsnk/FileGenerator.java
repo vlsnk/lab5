@@ -34,6 +34,7 @@ public class FileGenerator implements Runnable {
                 if (cmd.equals(getRequest) || cmd.equals(headRequest)) {
                     System.out.println(cmd);
                     if (args.length<2) return;
+                    //
                     String name = URLDecoder.decode(args[1], "ASCII");
                     if (!HtmlGenerator.exist(name)){
                         sendNotFoundError(outputStream);
