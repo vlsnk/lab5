@@ -34,22 +34,23 @@ public class FileGenerator implements Runnable {
                 if (cmd.equals(getRequest) || cmd.equals(headRequest)) {
                     System.out.println(cmd);
                     if (args.length<2) return;
-                    //
+
                     String name = URLDecoder.decode(args[1], "ASCII");
-                    if (!HtmlGenerator.exist(name)){
+                    if (!FileManager.exist(name)){
                         sendNotFoundError(outputStream);
                     } else {
-                        HtmlGenerator htmlGenerator = new HtmlGenerator(name);
-                        byte[] answer = htmlGenerator.getAnswer();
+                        FileManager fileManager = new FileManager(name);
+                        byte[] answer = fileManager.getAnswer();
 
                         if (answer == null) sendNotFoundError(outputStream);
 
-                        String contentType = htmlGenerator.getContent();
-                        sendHead(outputStream, answer.length, contentType);
+                        sendHead(outputStream, answer.length, "text/html");
                         if (cmd.equals(getRequest)) sendHtmlBody(outputStream, answer);
                     }
+                } else {
+                    send501Error(outputStream);
                 }
-                Thread.currentThread().interrupt();
+                return;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -75,4 +76,10 @@ public class FileGenerator implements Runnable {
         outputStream.flush();
     }
 
+    void send501Error(DataOutputStream outputStream) throws IOException {
+        outputStream.write("HTTP/1.0 501 Not Implemented\r\n".getBytes());
+        outputStream.flush();
+        outputStream.write(HtmlGenerator.generateExceptionHtml("501 Not Implemented").getBytes());
+        outputStream.flush();
+    }
 }
